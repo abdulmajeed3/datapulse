@@ -210,8 +210,9 @@ def _json_to_dataframe(raw: Any) -> pd.DataFrame:
         if isinstance(values[0], list):
             # Column-oriented: {col: [v1, v2, ...]} — truncate to shortest array
             min_len = min(len(v) for v in values if isinstance(v, list))
-            aligned = {k: (v[:min_len] if isinstance(v, list) else [v] * min_len)
-                       for k, v in raw.items()}
+            aligned = {
+                k: (v[:min_len] if isinstance(v, list) else [v] * min_len) for k, v in raw.items()
+            }
             return pd.DataFrame(aligned)
 
         # Single record — wrap in list

@@ -13,9 +13,7 @@ from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
 
-TEST_DATABASE_URL = (
-    "postgresql+asyncpg://datapulse:datapulse@localhost:5432/datapulse_test"
-)
+TEST_DATABASE_URL = "postgresql+asyncpg://datapulse:datapulse@localhost:5432/datapulse_test"
 
 _test_engine = create_async_engine(TEST_DATABASE_URL, poolclass=NullPool)
 _test_session_factory = async_sessionmaker(
