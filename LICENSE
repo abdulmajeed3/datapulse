@@ -1,0 +1,77 @@
+REFERENCE-ONLY SOURCE-AVAILABLE LICENSE
+(Custom proprietary license. This is NOT an open-source license.)
+
+Project: DataPulse
+Copyright (c) 2026 Abdul Majeed. All rights reserved.
+GitHub account: abdulmajeed3
+
+1. DEFINITIONS
+"Software" means all source code, documentation and other files in this
+repository. "Licensor" means Abdul Majeed. "You" means any person who accesses the
+Software. "Evaluation" means reviewing the Software to assess the Licensor's
+skills, architecture and coding standards, for example by a recruiter, hiring
+manager, prospective client or fellow developer.
+
+2. PERMITTED USE (ONLY THE FOLLOWING)
+(a) You may view and read the Software in this public repository.
+(b) You may download or clone one copy and run it locally on your own
+    computer, solely for personal, non-commercial Evaluation. For this purpose
+    only, You may create local configuration files and environment settings
+    needed to run it, and may build it, without changing its source code.
+(c) You may keep that copy only as long as reasonably necessary for the
+    Evaluation, and must not make it accessible to anyone else.
+
+3. RESTRICTIONS
+Without the Licensor's prior written permission, You must not:
+(a) deploy, host or operate the Software, or make it available to any third
+    party (including over a network), for production, staging, demonstration
+    or any other operational use;
+(b) use the Software for any commercial purpose, or incorporate it, in whole or
+    in part, into any product, service or client project;
+(c) modify, adapt, translate or create derivative works from the Software;
+(d) copy, distribute, publish, republish, sublicense, sell, lease or otherwise
+    make the Software available to others, other than as described in
+    Section 4;
+(e) rebrand the Software, or present it or any part of it as Your own work or
+    the work of anyone other than the Licensor;
+(f) remove or alter any copyright, attribution or license notice.
+
+4. GITHUB
+Nothing in this license restricts the rights that GitHub's Terms of Service
+give to GitHub and its users to view and fork this repository on GitHub.
+Those rights do not grant any permission beyond viewing and forking within
+GitHub. Any fork, and any copy made outside GitHub, remains subject to this
+license, and Sections 2 and 3 continue to apply to it.
+
+5. THIRD-PARTY COMPONENTS
+The Software may use third-party libraries and tools, which are governed by
+their own licenses. This license does not apply to them and does not claim
+ownership of them.
+
+6. OWNERSHIP AND RESERVATION OF RIGHTS
+The Licensor owns the Software. All rights not expressly granted in this
+license are reserved. No patent, trademark, trade name or other intellectual
+property right is granted, expressly or by implication.
+
+7. REQUESTING ADDITIONAL PERMISSION
+To request permission for any use not allowed above, contact: majeed.developer0@gmail.com.
+Permission is effective only if given in writing by the Licensor.
+
+8. TERMINATION
+Your permissions under Section 2 end automatically if You breach this
+license. On termination You must delete all copies of the Software in Your
+possession.
+
+9. DISCLAIMER OF WARRANTY
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NON-INFRINGEMENT.
+
+10. LIMITATION OF LIABILITY
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE LICENSOR IS NOT LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM, OUT OF OR IN CONNECTION WITH
+THE SOFTWARE OR ITS USE.
+
+11. APPLICABLE LAW
+Nothing in this license limits any right You have under applicable law that
+cannot be waived or restricted by contract.

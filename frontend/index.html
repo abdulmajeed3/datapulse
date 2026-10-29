@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DataPulse</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+:root {
+  --bg: #f4f6fb;
+  --bg-2: #ffffff;
+  --bg-3: #eef1f8;
+  --border: #dde2ef;
+  --fg: #18192c;
+  --fg-2: #505673;
+  --fg-3: #8b93ad;
+  --accent: #4f6ef7;
+  --accent-h: #3a58e8;
+  --accent-bg: #eef1fe;
+  --success: #16a34a;
+  --success-bg: #f0fdf4;
+  --error: #dc2626;
+  --error-bg: #fef2f2;
+  --warning: #d97706;
+  --warning-bg: #fffbeb;
+  --info: #0284c7;
+  --info-bg: #f0f9ff;
+  --sidebar-w: 220px;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,.1);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d0f1a;
+    --bg-2: #141627;
+    --bg-3: #1a1e33;
+    --border: #252a42;
+    --fg: #e4e7f5;
+    --fg-2: #8d93b0;
+    --fg-3: #555b78;
+    --accent: #7289ff;
+    --accent-h: #8499ff;
+    --accent-bg: #1a2050;
+    --success: #4ade80;
+    --success-bg: #052e16;
+    --error: #f87171;
+    --error-bg: #2d1010;
+    --warning: #fbbf24;
+    --warning-bg: #2d1d04;
+    --info: #38bdf8;
+    --info-bg: #082030;
+    --shadow: 0 1px 3px rgba(0,0,0,.3);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,.4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d0f1a; --bg-2: #141627; --bg-3: #1a1e33;
+  --border: #252a42; --fg: #e4e7f5; --fg-2: #8d93b0; --fg-3: #555b78;
+  --accent: #7289ff; --accent-h: #8499ff; --accent-bg: #1a2050;
+  --success: #4ade80; --success-bg: #052e16; --error: #f87171; --error-bg: #2d1010;
+  --warning: #fbbf24; --warning-bg: #2d1d04; --info: #38bdf8; --info-bg: #082030;
+  --shadow: 0 1px 3px rgba(0,0,0,.3); --shadow-lg: 0 4px 16px rgba(0,0,0,.4);
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.5}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,textarea,select{font-family:inherit;font-size:14px}
+a{color:var(--accent);text-decoration:none}
+
+/* Layout */
+#app-shell{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:var(--sidebar-w);background:var(--bg-2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-logo{padding:20px 16px 16px;font-weight:700;font-size:18px;color:var(--fg);
+  letter-spacing:-.5px;display:flex;align-items:center;gap:8px}
+.sidebar-logo svg{color:var(--accent)}
+.nav-section{padding:8px 8px;flex:1}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;
+  color:var(--fg-2);font-weight:500;font-size:13px;cursor:pointer;transition:all .15s;user-select:none}
+.nav-item:hover{background:var(--bg-3);color:var(--fg)}
+.nav-item.active{background:var(--accent-bg);color:var(--accent)}
+.nav-item svg{flex-shrink:0;opacity:.7}
+.nav-item.active svg{opacity:1}
+.sidebar-footer{padding:12px 8px;border-top:1px solid var(--border)}
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:56px;background:var(--bg-2);border-bottom:1px solid var(--border);
+  flex-shrink:0;gap:12px}
+.topbar-title{font-weight:600;font-size:15px}
+.page-content{padding:24px;flex:1;max-width:1200px;width:100%}
+
+/* Cards */
+.card{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.card-title{font-weight:600;font-size:15px;margin-bottom:16px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:6px;
+  font-weight:500;font-size:13px;transition:all .15s;white-space:nowrap;line-height:1}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-h)}
+.btn-secondary{background:var(--bg-3);color:var(--fg);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--border)}
+.btn-danger{background:var(--error-bg);color:var(--error);border:1px solid var(--error)}
+.btn-danger:hover{background:var(--error);color:#fff}
+.btn-ghost{color:var(--fg-2)}
+.btn-ghost:hover{color:var(--fg);background:var(--bg-3)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-icon{padding:6px;border-radius:6px}
+
+/* Form */
+.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.form-label{font-size:12px;font-weight:500;color:var(--fg-2)}
+.form-input{padding:8px 12px;border:1px solid var(--border);border-radius:6px;
+  background:var(--bg);color:var(--fg);transition:border .15s;outline:none;width:100%}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-bg)}
+.form-textarea{padding:8px 12px;border:1px solid var(--border);border-radius:6px;
+  background:var(--bg);color:var(--fg);resize:vertical;min-height:80px;outline:none;width:100%}
+.form-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-bg)}
+.form-hint{font-size:11px;color:var(--fg-3)}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:99px;
+  font-size:11px;font-weight:500}
+.badge-ready{background:var(--success-bg);color:var(--success)}
+.badge-error{background:var(--error-bg);color:var(--error)}
+.badge-pending,.badge-processing{background:var(--warning-bg);color:var(--warning)}
+.badge-info{background:var(--info-bg);color:var(--info)}
+.badge-neutral{background:var(--bg-3);color:var(--fg-2)}
+
+/* Table */
+.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:9px 12px;background:var(--bg-3);color:var(--fg-2);
+  font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--border);color:var(--fg);vertical-align:middle}
+tr:hover td{background:var(--bg-3)}
+.mono{font-family:'JetBrains Mono',monospace;font-size:12px}
+
+/* Pagination */
+.pagination{display:flex;align-items:center;gap:6px;margin-top:16px}
+.page-btn{padding:5px 10px;border-radius:5px;font-size:12px;font-weight:500;
+  color:var(--fg-2);background:var(--bg-2);border:1px solid var(--border);cursor:pointer}
+.page-btn:hover{background:var(--bg-3)}
+.page-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.page-info{font-size:12px;color:var(--fg-3)}
+
+/* Tabs */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:20px}
+.tab{padding:8px 14px;font-size:13px;font-weight:500;color:var(--fg-2);cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.tab:hover{color:var(--fg)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;
+  display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px)}
+.modal{background:var(--bg-2);border-radius:var(--radius);width:100%;max-width:480px;
+  box-shadow:var(--shadow-lg);display:flex;flex-direction:column;max-height:90vh}
+.modal-header{padding:20px 20px 16px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border)}
+.modal-title{font-weight:600;font-size:15px}
+.modal-body{padding:20px;overflow-y:auto;flex:1}
+.modal-footer{padding:16px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+
+/* Alerts */
+.alert{padding:10px 14px;border-radius:6px;font-size:13px;display:flex;align-items:flex-start;gap:8px}
+.alert-error{background:var(--error-bg);color:var(--error);border:1px solid rgba(220,38,38,.2)}
+.alert-success{background:var(--success-bg);color:var(--success);border:1px solid rgba(22,163,74,.2)}
+.alert-warning{background:var(--warning-bg);color:var(--warning);border:1px solid rgba(217,119,6,.2)}
+.alert-info{background:var(--info-bg);color:var(--info);border:1px solid rgba(2,132,199,.2)}
+.alert+.alert{margin-top:8px}
+
+/* Spinner */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:20px;height:20px;border:2px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+.spinner-sm{width:14px;height:14px}
+.spinner-lg{width:32px;height:32px;border-width:3px}
+.center-spinner{display:flex;justify-content:center;align-items:center;padding:48px}
+
+/* Auth */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:var(--bg);padding:16px}
+.auth-card{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;
+  padding:32px;width:100%;max-width:380px;box-shadow:var(--shadow-lg)}
+.auth-logo{text-align:center;font-weight:700;font-size:24px;margin-bottom:8px;color:var(--fg)}
+.auth-subtitle{text-align:center;color:var(--fg-3);font-size:13px;margin-bottom:28px}
+
+/* Stat tiles */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.stat-tile{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;text-align:center}
+.stat-value{font-size:22px;font-weight:700;color:var(--fg);line-height:1}
+.stat-label{font-size:11px;color:var(--fg-3);margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
+
+/* File drop zone */
+.drop-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:32px;
+  text-align:center;cursor:pointer;transition:all .2s;color:var(--fg-3)}
+.drop-zone:hover,.drop-zone.dragging{border-color:var(--accent);background:var(--accent-bg);color:var(--accent)}
+.drop-zone input[type=file]{display:none}
+
+/* Empty state */
+.empty{text-align:center;padding:48px 24px;color:var(--fg-3)}
+.empty svg{margin:0 auto 12px;display:block;opacity:.4}
+.empty-title{font-weight:600;color:var(--fg-2);margin-bottom:4px}
+
+/* Chart container */
+.chart-wrap{position:relative;height:220px;margin-top:8px}
+
+/* Quality findings */
+.finding{display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--border)}
+.finding:first-child{border-top:none}
+.finding-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.finding-dot.error{background:var(--error)}
+.finding-dot.warning{background:var(--warning)}
+.finding-dot.info{background:var(--info)}
+
+/* Scrollable preview table */
+.preview-outer{overflow:auto;max-height:400px;border-radius:var(--radius);border:1px solid var(--border)}
+.preview-outer table{white-space:nowrap}
+
+/* Health dot */
+.health-dot{width:8px;height:8px;border-radius:50%;background:var(--fg-3)}
+.health-dot.ok{background:var(--success)}
+.health-dot.err{background:var(--error)}
+
+/* Misc */
+.row{display:flex;align-items:center;gap:8px}
+.gap{gap:12px}
+.between{justify-content:space-between}
+.ml-auto{margin-left:auto}
+.text-sm{font-size:12px}
+.text-xs{font-size:11px}
+.text-muted{color:var(--fg-3)}
+.text-fg2{color:var(--fg-2)}
+.mt-2{margin-top:8px}
+.mt-4{margin-top:16px}
+.mb-4{margin-bottom:16px}
+.fw-600{font-weight:600}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px}
+
+@media(max-width:640px){
+  #app-shell{flex-direction:column}
+  .sidebar{width:100%;height:auto;flex-direction:row;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border)}
+  .sidebar-logo{display:none}
+  .nav-section{display:flex;flex-direction:row;padding:4px}
+  .sidebar-footer{display:none}
+  .nav-item span{display:none}
+  .topbar{padding:0 12px}
+  .page-content{padding:12px}
+}
+</style>
+</head>
+<body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+
+<div id="root"></div>
+
+<script>
+'use strict';
+const {useState,useEffect,useCallback,useRef,useMemo,createElement:h,Fragment} = React;
+
+/* ─────────────────── SVG Icons ─────────────────── */
+const Icon = ({d,size=16,cls=''}) => h('svg',{xmlns:'http://www.w3.org/2000/svg',width:size,height:size,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round',className:cls},h('path',{d}));
+const icons = {
+  dataset:'M4 6h16M4 10h16M4 14h16M4 18h16',
+  report:'M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z',
+  user:'M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8',
+  logout:'M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9',
+  upload:'M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12',
+  plus:'M12 5v14M5 12h14',
+  trash:'M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2',
+  edit:'M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z',
+  eye:'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 9a3 3 0 100 6 3 3 0 000-6',
+  chevron_l:'M15 18l-6-6 6-6',
+  x:'M18 6L6 18M6 6l12 12',
+  check:'M20 6L9 17l-5-5',
+  alert:'M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01',
+  info:'M12 22a10 10 0 100-20 10 10 0 000 20zM12 8h.01M11 12h1v4h1',
+  bar_chart:'M18 20V10M12 20V4M6 20v-6',
+};
+const Ico = ({n,size=16,cls=''}) => icons[n] ? Icon({d:icons[n],size,cls}) : null;
+
+/* ─────────────────── API ─────────────────── */
+const BASE = 'http://localhost:8000/api/v1';
+const getTokens = () => { try { return JSON.parse(localStorage.getItem('dp_tokens')||'null'); } catch { return null; } };
+const saveTokens = t => { try { localStorage.setItem('dp_tokens',JSON.stringify(t)); } catch {} };
+const clearTokens = () => { try { localStorage.removeItem('dp_tokens'); } catch {} };
+let _refreshProm = null;
+let _onUnauthenticated = null;
+
+async function apiFetch(method, path, body, opts={}) {
+  const tokens = getTokens();
+  const headers = {};
+  if (!opts.multipart) headers['Content-Type'] = 'application/json';
+  if (tokens?.access_token) headers['Authorization'] = `Bearer ${tokens.access_token}`;
+  const res = await fetch(`${BASE}${path}`, {
+    method,
+    headers,
+    body: opts.multipart ? body : (body ? JSON.stringify(body) : undefined),
+  });
+  if (res.status === 401 && tokens?.refresh_token && !opts._retry) {
+    if (!_refreshProm) {
+      _refreshProm = fetch(`${BASE}/auth/refresh`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({refresh_token: tokens.refresh_token}),
+      }).then(r => r.ok ? r.json() : null).finally(() => { _refreshProm = null; });
+    }
+    const nt = await _refreshProm;
+    if (nt) { saveTokens(nt); return apiFetch(method, path, body, {...opts, _retry:true}); }
+    clearTokens();
+    if (_onUnauthenticated) _onUnauthenticated();
+    throw Object.assign(new Error('Session expired'), {status:401});
+  }
+  if (res.status === 204) return null;
+  const data = await res.json().catch(()=>null);
+  if (!res.ok) {
+    let msg;
+    if (typeof data?.detail === 'string') {
+      msg = data.detail;
+    } else if (Array.isArray(data?.detail)) {
+      msg = data.detail.map(e => {
+        const field = e.loc ? e.loc.slice(1).join('.') : '';
+        const text = e.msg || e.message || JSON.stringify(e);
+        return field ? `${field}: ${text}` : text;
+      }).join(' | ');
+    } else {
+      msg = `HTTP ${res.status}`;
+    }
+    throw Object.assign(new Error(msg), {status:res.status, data});
+  }
+  return data;
+}
+const api = {
+  post: (p,b) => apiFetch('POST',p,b),
+  get: p => apiFetch('GET',p),
+  patch: (p,b) => apiFetch('PATCH',p,b),
+  delete: p => apiFetch('DELETE',p),
+  upload: (p,f) => apiFetch('POST',p,f,{multipart:true}),
+};
+
+/* ─────────────────── Utilities ─────────────────── */
+const fmt_bytes = b => b < 1024 ? `${b} B` : b < 1048576 ? `${(b/1024).toFixed(1)} KB` : `${(b/1048576).toFixed(1)} MB`;
+const fmt_date = d => d ? new Date(d).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}) : '—';
+const fmt_num = n => n == null ? '—' : n.toLocaleString();
+const status_badge = s => {
+  const cls = {ready:'badge-ready',error:'badge-error',pending:'badge-pending',processing:'badge-pending'}[s] || 'badge-neutral';
+  return h('span',{className:`badge ${cls}`}, s);
+};
+
+/* ─────────────────── Spinner / Empty / Alert ─────────────────── */
+const Spinner = ({lg,cls=''}) => h('div',{className:`spinner ${lg?'spinner-lg':''} ${cls}`});
+const CenterSpinner = () => h('div',{className:'center-spinner'},h(Spinner,{lg:true}));
+const Empty = ({title,msg,action}) => h('div',{className:'empty'},
+  h(Ico,{n:'dataset',size:40}),
+  h('div',{className:'empty-title'},title),
+  msg && h('p',{className:'text-xs mt-2'},msg),
+  action && h('div',{className:'mt-4'},action),
+);
+const AlertBox = ({type='error',msg}) => msg
+  ? h('div',{className:`alert alert-${type}`},h(Ico,{n:type==='error'?'alert':type==='success'?'check':'info',size:14}),h('span',null,msg))
+  : null;
+
+/* ─────────────────── Pagination ─────────────────── */
+function Pagination({page,pages,onChange}) {
+  if (pages <= 1) return null;
+  const btns = [];
+  const go = p => p>=1 && p<=pages && onChange(p);
+  btns.push(h('button',{key:'p',className:'page-btn',onClick:()=>go(page-1),disabled:page===1},'‹'));
+  for (let i=Math.max(1,page-2); i<=Math.min(pages,page+2); i++)
+    btns.push(h('button',{key:i,className:`page-btn ${i===page?'active':''}`,onClick:()=>go(i)},i));
+  btns.push(h('button',{key:'n',className:'page-btn',onClick:()=>go(page+1),disabled:page===pages},'›'));
+  return h('div',{className:'pagination'},
+    h('span',{className:'page-info'},`Page ${page} of ${pages}`),
+    ...btns,
+  );
+}
+
+/* ─────────────────── Modal ─────────────────── */
+function Modal({title,onClose,children,footer}) {
+  useEffect(()=>{
+    const handler = e => { if(e.key==='Escape') onClose(); };
+    document.addEventListener('keydown',handler);
+    return ()=>document.removeEventListener('keydown',handler);
+  },[onClose]);
+  return h('div',{className:'modal-overlay',onClick:e=>{if(e.target===e.currentTarget)onClose()}},
+    h('div',{className:'modal'},
+      h('div',{className:'modal-header'},
+        h('div',{className:'modal-title'},title),
+        h('button',{className:'btn btn-icon btn-ghost',onClick:onClose},h(Ico,{n:'x',size:16})),
+      ),
+      h('div',{className:'modal-body'},children),
+      footer && h('div',{className:'modal-footer'},footer),
+    ),
+  );
+}
+
+/* ─────────────────── BarChart via Chart.js ─────────────────── */
+function BarChart({labels,data,label,color='#4f6ef7',horizontal=false}) {
+  const ref = useRef();
+  const chartRef = useRef();
+  useEffect(()=>{
+    if (!ref.current) return;
+    if (chartRef.current) chartRef.current.destroy();
+    const isDark = document.documentElement.dataset.theme === 'dark'
+      || (!document.documentElement.dataset.theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const gridColor = isDark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.06)';
+    const tickColor = isDark ? '#555b78' : '#8b93ad';
+    chartRef.current = new Chart(ref.current, {
+      type: 'bar',
+      data: {labels, datasets:[{label, data, backgroundColor: color+'cc', borderRadius:4, borderSkipped:false}]},
+      options: {
+        indexAxis: horizontal ? 'y' : 'x',
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${fmt_num(ctx.raw)}`}}},
+        scales:{
+          x:{grid:{color:gridColor},ticks:{color:tickColor,maxRotation:30}},
+          y:{grid:{color:gridColor},ticks:{color:tickColor}},
+        },
+      },
+    });
+    return ()=>{ if(chartRef.current){chartRef.current.destroy();chartRef.current=null;}};
+  },[labels,data,label,color,horizontal]);
+  return h('canvas',{ref,style:{width:'100%',height:'100%'}});
+}
+
+/* ─────────────────── Login ─────────────────── */
+function Login({onLogin, onRegister}) {
+  const [email,setEmail] = useState('');
+  const [pw,setPw] = useState('');
+  const [err,setErr] = useState('');
+  const [loading,setLoading] = useState(false);
+  const submit = async e => {
+    e.preventDefault(); setErr(''); setLoading(true);
+    try {
+      const t = await api.post('/auth/login',{email,password:pw});
+      saveTokens(t);
+      onLogin(t);
+    } catch(ex){ setErr(ex.message); }
+    finally { setLoading(false); }
+  };
+  return h('div',{className:'auth-wrap'},
+    h('div',{className:'auth-card'},
+      h('div',{className:'auth-logo'},'⚡ DataPulse'),
+      h('p',{className:'auth-subtitle'},'Sign in to your account'),
+      h(AlertBox,{type:'error',msg:err}),
+      err && h('div',{style:{height:12}}),
+      h('form',{onSubmit:submit},
+        h('div',{className:'form-group'},
+          h('label',{className:'form-label'},'Email'),
+          h('input',{type:'email',className:'form-input',value:email,onChange:e=>setEmail(e.target.value),required:true,placeholder:'you@example.com'}),
+        ),
+        h('div',{className:'form-group'},
+          h('label',{className:'form-label'},'Password'),
+          h('input',{type:'password',className:'form-input',value:pw,onChange:e=>setPw(e.target.value),required:true,placeholder:'••••••••'}),
+        ),
+        h('button',{type:'submit',className:'btn btn-primary',style:{width:'100%',justifyContent:'center',marginTop:4},disabled:loading},
+          loading ? h(Spinner,{cls:'spinner-sm'}) : 'Sign in',
+        ),
+      ),
+      h('p',{style:{textAlign:'center',marginTop:16,fontSize:13,color:'var(--fg-3)'}},
+        'No account? ',h('a',{href:'#',onClick:e=>{e.preventDefault();onRegister()}},'Register'),
+      ),
+    ),
+  );
+}
+
+/* ─────────────────── Register ─────────────────── */
+function Register({onSuccess, onLogin}) {
+  const [form,setForm] = useState({email:'',username:'',password:''});
+  const [err,setErr] = useState('');
+  const [loading,setLoading] = useState(false);
+  const set = k => e => setForm(f=>({...f,[k]:e.target.value}));
+  const submit = async e => {
+    e.preventDefault(); setErr(''); setLoading(true);
+    try {
+      await api.post('/auth/register',form);
+      onSuccess();
+    } catch(ex){ setErr(ex.message); }
+    finally { setLoading(false); }
+  };
+  return h('div',{className:'auth-wrap'},
+    h('div',{className:'auth-card'},
+      h('div',{className:'auth-logo'},'⚡ DataPulse'),
+      h('p',{className:'auth-subtitle'},'Create your account'),
+      h(AlertBox,{type:'error',msg:err}),
+      err && h('div',{style:{height:12}}),
+      h('form',{onSubmit:submit},
+        h('div',{className:'form-group'},
+          h('label',{className:'form-label'},'Email'),
+          h('input',{type:'email',className:'form-input',value:form.email,onChange:set('email'),required:true,placeholder:'you@example.com'}),
+        ),
+        h('div',{className:'form-group'},
+          h('label',{className:'form-label'},'Username'),
+          h('input',{type:'text',className:'form-input',value:form.username,onChange:set('username'),required:true,placeholder:'username',pattern:'^[a-zA-Z0-9_-]+$',minLength:3,maxLength:50}),
+          h('span',{className:'form-hint'},'Letters, numbers, _ and - only'),
+        ),
+        h('div',{className:'form-group'},
+          h('label',{className:'form-label'},'Password'),
+          h('input',{type:'password',className:'form-input',value:form.password,onChange:set('password'),required:true,placeholder:'Min 8 chars, upper+lower+digit',minLength:8}),
+        ),
+        h('button',{type:'submit',className:'btn btn-primary',style:{width:'100%',justifyContent:'center',marginTop:4},disabled:loading},
+          loading ? h(Spinner,{cls:'spinner-sm'}) : 'Create account',
+        ),
+      ),
+      h('p',{style:{textAlign:'center',marginTop:16,fontSize:13,color:'var(--fg-3)'}},
+        'Have an account? ',h('a',{href:'#',onClick:e=>{e.preventDefault();onLogin()}},'Sign in'),
+      ),
+    ),
+  );
+}
+
+/* ─────────────────── Upload Modal ─────────────────── */
+function UploadModal({onClose, onDone}) {
+  const [name,setName] = useState('');
+  const [desc,setDesc] = useState('');
+  const [file,setFile] = useState(null);
+  const [drag,setDrag] = useState(false);
+  const [err,setErr] = useState('');
+  const [loading,setLoading] = useState(false);
+  const inputRef = useRef();
+
+  const pickFile = f => {
+    if (!f) return;
+    setFile(f);
+    if (!name) setName(f.name.replace(/\.[^.]+$/,''));
+  };
+  const onDrop = e => { e.preventDefault(); setDrag(false); pickFile(e.dataTransfer.files[0]); };
+  const submit = async e => {
+    e.preventDefault();
+    if (!file) { setErr('Please select a file.'); return; }
+    setErr(''); setLoading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file',file);
+      fd.append('name',name);
+      if (desc) fd.append('description',desc);
+      const ds = await api.upload('/datasets/',fd);
+      onDone(ds);
+    } catch(ex){ setErr(ex.message); }
+    finally { setLoading(false); }
+  };
+
+  return h(Modal,{title:'Upload Dataset',onClose,
+    footer: h(Fragment,null,
+      h('button',{className:'btn btn-secondary',onClick:onClose},'Cancel'),
+      h('button',{className:'btn btn-primary',onClick:submit,disabled:loading||!file||!name},
+        loading ? h(Spinner,{cls:'spinner-sm'}) : h(Fragment,null,h(Ico,{n:'upload',size:14}),'Upload'),
+      ),
+    )},
+    h(AlertBox,{type:'error',msg:err}),
+    err && h('div',{style:{height:12}}),
+    h('div',{className:'drop-zone'+(drag?' dragging':''),
+      onClick:()=>inputRef.current.click(),
+      onDragOver:e=>{e.preventDefault();setDrag(true)},
+      onDragLeave:()=>setDrag(false),
+      onDrop,
+    },
+      h('input',{type:'file',ref:inputRef,accept:'.csv,.json',onChange:e=>pickFile(e.target.files[0])}),
+      file
+        ? h(Fragment,null,h('div',{style:{fontSize:22}},'📄'),h('div',{className:'mt-2 fw-600',style:{color:'var(--fg)'}},file.name),h('div',{className:'text-xs mt-2'},fmt_bytes(file.size)))
+        : h(Fragment,null,h(Ico,{n:'upload',size:24}),h('div',{className:'mt-2 fw-600'},'Drop CSV or JSON file here'),h('div',{className:'text-xs mt-2'},'or click to browse')),
+    ),
+    h('div',{className:'form-group mt-4'},
+      h('label',{className:'form-label'},'Name *'),
+      h('input',{type:'text',className:'form-input',value:name,onChange:e=>setName(e.target.value),required:true,maxLength:255,placeholder:'Dataset name'}),
+    ),
+    h('div',{className:'form-group'},
+      h('label',{className:'form-label'},'Description'),
+      h('textarea',{className:'form-textarea',value:desc,onChange:e=>setDesc(e.target.value),maxLength:2000,placeholder:'Optional description'}),
+    ),
+  );
+}
+
+/* ─────────────────── Edit Dataset Modal ─────────────────── */
+function EditDatasetModal({dataset, onClose, onDone}) {
+  const [name,setName] = useState(dataset.name);
+  const [desc,setDesc] = useState(dataset.description||'');
+  const [err,setErr] = useState('');
+  const [loading,setLoading] = useState(false);
+  const submit = async e => {
+    e.preventDefault(); setErr(''); setLoading(true);
+    try {
+      const d = await api.patch(`/datasets/${dataset.id}`,{name:name||undefined,description:desc||null});
+      onDone(d);
+    } catch(ex){ setErr(ex.message); }
+    finally { setLoading(false); }
+  };
+  return h(Modal,{title:'Edit Dataset',onClose,
+    footer: h(Fragment,null,
+      h('button',{className:'btn btn-secondary',onClick:onClose},'Cancel'),
+      h('button',{className:'btn btn-primary',onClick:submit,disabled:loading||!name},
+        loading ? h(Spinner,{cls:'spinner-sm'}) : 'Save',
+      ),
+    )},
+    h(AlertBox,{type:'error',msg:err}),
+    err && h('div',{style:{height:12}}),
+    h('div',{className:'form-group'},
+      h('label',{className:'form-label'},'Name *'),
+      h('input',{type:'text',className:'form-input',value:name,onChange:e=>setName(e.target.value),maxLength:255}),
+    ),
+    h('div',{className:'form-group'},
+      h('label',{className:'form-label'},'Description'),
+      h('textarea',{className:'form-textarea',value:desc,onChange:e=>setDesc(e.target.value),maxLength:2000}),
+    ),
+  );
+}
+
+/* ─────────────────── Create Report Modal ─────────────────── */
+function CreateReportModal({datasets, onClose, onDone, prefillDataset}) {
+  const [title,setTitle] = useState('');
+  const [dsId,setDsId] = useState(prefillDataset?.id||'');
+  const [err,setErr] = useState('');
+  const [loading,setLoading] = useState(false);
+  const submit = async e => {
+    e.preventDefault(); setErr(''); setLoading(true);
+    try {
+      const r = await api.post('/reports/',{dataset_id:dsId,title});
+      onDone(r);
+    } catch(ex){ setErr(ex.message); }
+    finally { setLoading(false); }
+  };
+  const readyDs = datasets.filter(d=>d.status==='ready');
+  return h(Modal,{title:'Create Report',onClose,
+    footer: h(Fragment,null,
+      h('button',{className:'btn btn-secondary',onClick:onClose},'Cancel'),
+      h('button',{className:'btn btn-primary',onClick:submit,disabled:loading||!title||!dsId},
+        loading ? h(Spinner,{cls:'spinner-sm'}) : h(Fragment,null,h(Ico,{n:'plus',size:14}),'Create'),
+      ),
+    )},
+    h(AlertBox,{type:'error',msg:err}),
+    err && h('div',{style:{height:12}}),
+    h('div',{className:'form-group'},
+      h('label',{className:'form-label'},'Report Title *'),
+      h('input',{type:'text',className:'form-input',value:title,onChange:e=>setTitle(e.target.value),maxLength:255,placeholder:'e.g. Q3 Sales Analysis'}),
+    ),
+    h('div',{className:'form-group'},
+      h('label',{className:'form-label'},'Dataset *'),
+      h('select',{className:'form-input',value:dsId,onChange:e=>setDsId(e.target.value)},
+        h('option',{value:''},'— Select a dataset —'),
+        readyDs.map(d=>h('option',{key:d.id,value:d.id},d.name)),
+      ),
+    ),
+    readyDs.length===0 && h(AlertBox,{type:'warning',msg:'No ready datasets. Upload and process a dataset first.'}),
+  );
+}
+
+/* ─────────────────── Datasets List Page ─────────────────── */
+function DatasetsPage({onView}) {
+  const [data,setData] = useState(null);
+  const [page,setPage] = useState(1);
+  const [loading,setLoading] = useState(false);
+  const [err,setErr] = useState('');
+  const [showUpload,setShowUpload] = useState(false);
+
+  const load = useCallback(async p=>{
+    setLoading(true); setErr('');
+    try { setData(await api.get(`/datasets?page=${p}&page_size=20`)); setPage(p); }
+    catch(ex){ setErr(ex.message); }
+    finally { setLoading(false); }
+  },[]);
+
+  useEffect(()=>{ load(1); },[load]);
+
+  const onUploaded = ds => { setShowUpload(false); load(page); };
+
+  return h('div',null,
+    h('div',{className:'row between mb-4'},
+      h('h2',{style:{fontWeight:600,fontSize:18}},'Datasets'),
+      h('button',{className:'btn btn-primary',onClick:()=>setShowUpload(true)},
+        h(Ico,{n:'upload',size:14}),'Upload'),
+    ),
+    h(AlertBox,{type:'error',msg:err}),
+    loading && !data ? h(CenterSpinner) :
+    data?.items?.length === 0 ? h(Empty,{title:'No datasets yet',msg:'Upload a CSV or JSON file to get started.',
+      action:h('button',{className:'btn btn-primary',onClick:()=>setShowUpload(true)},h(Ico,{n:'upload',size:14}),'Upload dataset')})
+    : h(Fragment,null,
+      h('div',{className:'table-wrap'},
+        h('table',null,
+          h('thead',null,h('tr',null,
+            h('th',null,'Name'),
+            h('th',null,'Status'),
+            h('th',null,'Rows'),
+            h('th',null,'Columns'),
+            h('th',null,'Size'),
+            h('th',null,'Created'),
+            h('th',null,''),
+          )),
+          h('tbody',null,(data?.items||[]).map(d=>
+            h('tr',{key:d.id},
+              h('td',null,
+                h('div',{className:'fw-600 truncate'},d.name),
+                d.description && h('div',{className:'text-xs text-muted',style:{maxWidth:240,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},d.description),
+              ),
+              h('td',null,status_badge(d.status)),
+              h('td',null,fmt_num(d.row_count)),
+              h('td',null,fmt_num(d.column_count)),
+              h('td',null,fmt_bytes(d.file_size_bytes)),
+              h('td',null,fmt_date(d.created_at)),
+              h('td',null,
+                h('button',{className:'btn btn-sm btn-secondary',onClick:()=>onView(d.id)},
+                  h(Ico,{n:'eye',size:12}),'View'),
+              ),
+            )
+          )),
+        ),
+      ),
+      h(Pagination,{page,pages:data?.pages||1,onChange:load}),
+    ),
+    showUpload && h(UploadModal,{onClose:()=>setShowUpload(false),onDone:onUploaded}),
+  );
+}
+
+/* ─────────────────── Dataset Detail ─────────────────── */
+function DatasetDetail({id, onBack, onCreateReport}) {
+  const [ds,setDs] = useState(null);
+  const [loading,setLoading] = useState(true);
+  const [err,setErr] = useState('');
+  const [tab,setTab] = useState('overview');
+  const [showEdit,setShowEdit] = useState(false);
+  const [showDeleteConfirm,setShowDeleteConfirm] = useState(false);
+  const [deleting,setDeleting] = useState(false);
+
+  useEffect(()=>{
+    (async()=>{
+      setLoading(true); setErr('');
+      try { setDs(await api.get(`/datasets/${id}`)); }
+      catch(ex){ setErr(ex.message); }
+      finally { setLoading(false); }
+    })();
+  },[id]);
+
+  const doDelete = async () => {
+    setDeleting(true);
+    try { await api.delete(`/datasets/${id}`); onBack(); }
+    catch(ex){ setErr(ex.message); setShowDeleteConfirm(false); setDeleting(false); }
+  };
+
+  if (loading) return h(CenterSpinner);
+  if (err) return h('div',null,h(AlertBox,{type:'error',msg:err}),
+    h('button',{className:'btn btn-secondary mt-4',onClick:onBack},'← Back'));
+  if (!ds) return null;
+
+  return h('div',null,
+    h('div',{className:'row between mb-4'},
+      h('div',{className:'row gap'},
+        h('button',{className:'btn btn-ghost btn-sm',onClick:onBack},h(Ico,{n:'chevron_l',size:14}),'Back'),
+        h('div',null,
+          h('h2',{style:{fontWeight:600,fontSize:18}},ds.name),
+          h('div',{className:'text-xs text-muted',style:{marginTop:2}},ds.original_filename,' · ',fmt_bytes(ds.file_size_bytes),' · ',fmt_date(ds.created_at)),
+        ),
+        status_badge(ds.status),
+      ),
+      h('div',{className:'row gap'},
+        h('button',{className:'btn btn-sm btn-secondary',onClick:()=>setShowEdit(true)},h(Ico,{n:'edit',size:12}),'Edit'),
+        h('button',{className:'btn btn-sm btn-primary',onClick:()=>onCreateReport(ds)},h(Ico,{n:'report',size:12}),'Report'),
+        h('button',{className:'btn btn-sm btn-danger',onClick:()=>setShowDeleteConfirm(true)},h(Ico,{n:'trash',size:12}),'Delete'),
+      ),
+    ),
+    h(AlertBox,{type:'error',msg:err}),
+    h('div',{className:'tabs'},
+      ['overview','preview','quality','statistics'].map(t=>
+        h('button',{key:t,className:`tab ${tab===t?'active':''}`,onClick:()=>setTab(t)},t.charAt(0).toUpperCase()+t.slice(1))),
+    ),
+    tab==='overview' && h(DatasetOverview,{ds}),
+    tab==='preview' && h(DatasetPreview,{id}),
+    tab==='quality' && h(DatasetQuality,{id}),
+    tab==='statistics' && h(DatasetStatistics,{id}),
+    showEdit && h(EditDatasetModal,{dataset:ds,onClose:()=>setShowEdit(false),onDone:d=>{setDs(d);setShowEdit(false);}}),
+    showDeleteConfirm && h(Modal,{title:'Delete Dataset',onClose:()=>setShowDeleteConfirm(false),
+      footer: h(Fragment,null,
+        h('button',{className:'btn btn-secondary',onClick:()=>setShowDeleteConfirm(false)},'Cancel'),
+        h('button',{className:'btn btn-danger',onClick:doDelete,disabled:deleting},deleting?h(Spinner,{cls:'spinner-sm'}):'Delete permanently'),
+      )},
+      h('p',null,'This will permanently delete "',h('strong',null,ds.name),'" and all its data. This cannot be undone.'),
+    ),
+  );
+}
+
+function DatasetOverview({ds}) {
+  return h('div',null,
+    h('div',{className:'stats-grid'},
+      h('div',{className:'stat-tile'},h('div',{className:'stat-value'},fmt_num(ds.row_count)),h('div',{className:'stat-label'},'Rows')),
+      h('div',{className:'stat-tile'},h('div',{className:'stat-value'},fmt_num(ds.column_count)),h('div',{className:'stat-label'},'Columns')),
+      h('div',{className:'stat-tile'},h('div',{className:'stat-value'},fmt_bytes(ds.file_size_bytes)),h('div',{className:'stat-label'},'File Size')),
+    ),
+    ds.description && h('div',{className:'card mb-4',style:{marginBottom:16}},
+      h('div',{className:'card-title'},'Description'),
+      h('p',{style:{color:'var(--fg-2)',fontSize:13}},ds.description),
+    ),
+    ds.columns?.length > 0 && h('div',{className:'card'},
+      h('div',{className:'card-title'},'Columns'),
+      h('div',{className:'table-wrap'},
+        h('table',null,
+          h('thead',null,h('tr',null,
+            h('th',null,'#'),h('th',null,'Column'),h('th',null,'Type'),h('th',null,'Missing'),
+          )),
+          h('tbody',null,ds.columns.map(c=>
+            h('tr',{key:c.name},
+              h('td',{className:'text-muted mono'},c.position+1),
+              h('td',null,h('span',{className:'fw-600'},c.name)),
+              h('td',null,h('span',{className:'badge badge-neutral'},c.inferred_type)),
+              h('td',null,c.missing_count>0 ? h('span',{style:{color:'var(--warning)'}},fmt_num(c.missing_count)) : h('span',{className:'text-muted'},'0')),
+            )
+          )),
+        ),
+      ),
+    ),
+  );
+}
+
+function DatasetPreview({id}) {
+  const [data,setData] = useState(null);
+  const [page,setPage] = useState(1);
+  const [loading,setLoading] = useState(false);
+  const [err,setErr] = useState('');
+
+  const load = useCallback(async p=>{
+    setLoading(true); setErr('');
+    try { setData(await api.get(`/datasets/${id}/preview?page=${p}&page_size=50`)); setPage(p); }
+    catch(ex){ setErr(ex.message); }
+    finally { setLoading(false); }
+  },[id]);
+
+  useEffect(()=>{ load(1); },[load]);
+
+  if (loading && !data) return h(CenterSpinner);
+  if (err) return h(AlertBox,{type:'error',msg:err});
+  if (!data) return null;
+
+  const cols = data.rows.length > 0 ? Object.keys(data.rows[0].data) : [];
+
+  return h('div',null,
+    h('div',{className:'row between mb-4'},
+      h('span',{className:'text-sm text-muted'},`${fmt_num(data.total_rows)} total rows`),
+      loading && h(Spinner),
+    ),
+    h('div',{className:'preview-outer'},
+      h('table',null,
+        h('thead',null,h('tr',null,
+          h('th',{style:{minWidth:50}},'#'),
+          cols.map(c=>h('th',{key:c,style:{minWidth:100}},c)),
+        )),
+        h('tbody',null,data.rows.map(r=>
+          h('tr',{key:r.index},
+            h('td',{className:'text-muted mono'},r.index),
+            cols.map(c=>h('td',{key:c,className:'mono'},String(r.data[c]??''))),
+          )
+        )),
+      ),
+    ),
+    h(Pagination,{page,pages:data.pages,onChange:load}),
+  );
+}
+
+function DatasetQuality({id}) {
+  const [data,setData] = useState(null);
+  const [loading,setLoading] = useState(true);
+  const [err,setErr] = useState('');
+
+  useEffect(()=>{
+    (async()=>{
+      setLoading(true); setErr('');
+      try { setData(await api.get(`/datasets/${id}/quality`)); }
+      catch(ex){ setErr(ex.message); }
+      finally { setLoading(false); }
+    })();
+  },[id]);
+
+  if (loading) return h(CenterSpinner);
+  if (err) return h(AlertBox,{type:'error',msg:err});
+  if (!data) return null;
+
+  const errs = data.findings.filter(f=>f.level==='error');
+  const warns = data.findings.filter(f=>f.level==='warning');
+
+  return h('div',null,
+    h('div',{className:'stats-grid'},
+      h('div',{className:'stat-tile'},h('div',{className:'stat-value',style:{color:errs.length?'var(--error)':'var(--success)'}},errs.length),h('div',{className:'stat-label'},'Errors')),
+      h('div',{className:'stat-tile'},h('div',{className:'stat-value',style:{color:warns.length?'var(--warning)':'var(--fg)'}},warns.length),h('div',{className:'stat-label'},'Warnings')),
+      h('div',{className:'stat-tile'},h('div',{className:'stat-value'},data.duplicate_rows),h('div',{className:'stat-label'},'Duplicate Rows')),
+      h('div',{className:'stat-tile'},h('div',{className:'stat-value'},fmt_num(data.total_rows)),h('div',{className:'stat-label'},'Total Rows')),
+    ),
+    data.findings.length > 0 && h('div',{className:'card mb-4',style:{marginBottom:16}},
+      h('div',{className:'card-title'},'Findings'),
+      data.findings.map((f,i)=>h('div',{key:i,className:'finding'},
+        h('div',{className:`finding-dot ${f.level}`}),
+        h('div',null,
+          h('div',{style:{fontWeight:500,fontSize:13}},f.message),
+          f.column && h('div',{className:'text-xs text-muted',style:{marginTop:2}},'Column: ',h('span',{className:'mono'},f.column)),
+        ),
+      )),
+    ),
+    h('div',{className:'card'},
+      h('div',{className:'card-title'},'Column Quality'),
+      h('div',{className:'table-wrap'},
+        h('table',null,
+          h('thead',null,h('tr',null,
+            h('th',null,'Column'),h('th',null,'Type'),h('th',null,'Total'),
+            h('th',null,'Missing'),h('th',null,'Missing %'),h('th',null,'Unique'),
+          )),
+          h('tbody',null,data.columns.map(c=>
+            h('tr',{key:c.name},
+              h('td',null,h('span',{className:'fw-600'},c.name)),
+              h('td',null,h('span',{className:'badge badge-neutral'},c.inferred_type)),
+              h('td',null,fmt_num(c.total_count)),
+              h('td',null,c.missing_count>0?h('span',{style:{color:'var(--warning)'}},fmt_num(c.missing_count)):h('span',{className:'text-muted'},'0')),
+              h('td',null,(c.missing_pct*100).toFixed(1)+'%'),
+              h('td',null,c.unique_count!=null?fmt_num(c.unique_count):'—'),
+            )
+          )),
+        ),
+      ),
+    ),
+  );
+}
+
+function DatasetStatistics({id}) {
+  const [data,setData] = useState(null);
+  const [loading,setLoading] = useState(true);
+  const [err,setErr] = useState('');
+
+  useEffect(()=>{
+    (async()=>{
+      setLoading(true); setErr('');
+      try { setData(await api.get(`/datasets/${id}/statistics`)); }
+      catch(ex){ setErr(ex.message); }
+      finally { setLoading(false); }
+    })();
+  },[id]);
+
+  if (loading) return h(CenterSpinner);
+  if (err) return h(AlertBox,{type:'error',msg:err});
+  if (!data) return null;
+
+  return h('div',{style:{display:'flex',flexDirection:'column',gap:16}},
+    data.columns.map(c => h(ColumnStatCard,{key:c.name,col:c})),
+  );
+}
+
+function ColumnStatCard({col}) {
+  const title = h('div',{style:{display:'flex',alignItems:'center',gap:8,marginBottom:14}},
+    h('span',{style:{fontWeight:600,fontSize:14}},col.name),
+    h('span',{className:'badge badge-neutral'},col.inferred_type),
+  );
+
+  if (col.numeric) {
+    const s = col.numeric;
+    const vals = ['min','p25','median','mean','p75','max'];
+    const nums = vals.map(k=>s[k]);
+    return h('div',{className:'card'},
+      title,
+      h('div',{className:'stats-grid',style:{gridTemplateColumns:'repeat(auto-fit,minmax(100px,1fr))'}},
+        [['Count',s.count],['Missing',s.missing],['Min',s.min?.toFixed?.(2)??s.min],
+         ['Max',s.max?.toFixed?.(2)??s.max],['Mean',s.mean?.toFixed?.(2)??s.mean],
+         ['Median',s.median?.toFixed?.(2)??s.median],['Std',s.std?.toFixed?.(2)??s.std]].map(([l,v])=>
+          h('div',{key:l,className:'stat-tile'},h('div',{className:'stat-value',style:{fontSize:16}},v??'—'),h('div',{className:'stat-label'},l))
+        ),
+      ),
+      h('div',{className:'chart-wrap'},
+        h(BarChart,{labels:['Min','P25','Median','Mean','P75','Max'],data:nums,label:col.name,color:'#4f6ef7'}),
+      ),
+    );
+  }
+
+  if (col.categorical) {
+    const s = col.categorical;
+    const top = s.top_values.slice(0,10);
+    return h('div',{className:'card'},
+      title,
+      h('div',{className:'stats-grid',style:{gridTemplateColumns:'repeat(auto-fit,minmax(100px,1fr))'}},
+        [['Count',s.count],['Missing',s.missing],['Unique',s.unique]].map(([l,v])=>
+          h('div',{key:l,className:'stat-tile'},h('div',{className:'stat-value',style:{fontSize:16}},v??'—'),h('div',{className:'stat-label'},l))
+        ),
+      ),
+      top.length > 0 && h('div',{className:'chart-wrap',style:{height:Math.min(300,top.length*36+40)}},
+        h(BarChart,{
+          labels:top.map(r=>String(r.value??'(null)').slice(0,30)),
+          data:top.map(r=>r.count),
+          label:'Count',
+          color:'#22c55e',
+          horizontal:true,
+        }),
+      ),
+    );
+  }
+
+  if (col.datetime) {
+    const s = col.datetime;
+    return h('div',{className:'card'},
+      title,
+      h('div',{className:'stats-grid',style:{gridTemplateColumns:'repeat(auto-fit,minmax(100px,1fr))'}},
+        [['Count',s.count],['Missing',s.missing],['Earliest',s.earliest?fmt_date(s.earliest):'—'],['Latest',s.latest?fmt_date(s.latest):'—']].map(([l,v])=>
+          h('div',{key:l,className:'stat-tile'},h('div',{className:'stat-value',style:{fontSize:15}},v??'—'),h('div',{className:'stat-label'},l))
+        ),
+      ),
+    );
+  }
+
+  return h('div',{className:'card'},title,h('p',{className:'text-muted text-sm'},'No statistics available.'));
+}
+
+/* ─────────────────── Reports List Page ─────────────────── */
+function ReportsPage({onView, datasets}) {
+  const [data,setData] = useState(null);
+  const [page,setPage] = useState(1);
+  const [loading,setLoading] = useState(false);
+  const [err,setErr] = useState('');
+  const [showCreate,setShowCreate] = useState(false);
+
+  const load = useCallback(async p=>{
+    setLoading(true); setErr('');
+    try { setData(await api.get(`/reports?page=${p}&page_size=20`)); setPage(p); }
+    catch(ex){ setErr(ex.message); }
+    finally { setLoading(false); }
+  },[]);
+
+  useEffect(()=>{ load(1); },[load]);
+
+  return h('div',null,
+    h('div',{className:'row between mb-4'},
+      h('h2',{style:{fontWeight:600,fontSize:18}},'Reports'),
+      h('button',{className:'btn btn-primary',onClick:()=>setShowCreate(true)},
+        h(Ico,{n:'plus',size:14}),'New Report'),
+    ),
+    h(AlertBox,{type:'error',msg:err}),
+    loading && !data ? h(CenterSpinner) :
+    data?.items?.length === 0 ? h(Empty,{title:'No reports yet',msg:'Create a report from a ready dataset.'}) :
+    h(Fragment,null,
+      h('div',{className:'table-wrap'},
+        h('table',null,
+          h('thead',null,h('tr',null,
+            h('th',null,'Title'),h('th',null,'Dataset'),h('th',null,'Created'),h('th',null,''),
+          )),
+          h('tbody',null,(data?.items||[]).map(r=>
+            h('tr',{key:r.id},
+              h('td',null,h('span',{className:'fw-600'},r.title)),
+              h('td',null,r.dataset_id?h('span',{className:'mono text-xs'},r.dataset_id.slice(0,8)+'…'):h('span',{className:'text-muted'},'—')),
+              h('td',null,fmt_date(r.created_at)),
+              h('td',null,h('button',{className:'btn btn-sm btn-secondary',onClick:()=>onView(r.id)},h(Ico,{n:'eye',size:12}),'View')),
+            )
+          )),
+        ),
+      ),
+      h(Pagination,{page,pages:data?.pages||1,onChange:load}),
+    ),
+    showCreate && h(CreateReportModal,{datasets,onClose:()=>setShowCreate(false),onDone:r=>{setShowCreate(false);load(page)}}),
+  );
+}
+
+/* ─────────────────── Report Detail ─────────────────── */
+function ReportDetail({id, onBack}) {
+  const [report,setReport] = useState(null);
+  const [loading,setLoading] = useState(true);
+  const [err,setErr] = useState('');
+  const [showDeleteConfirm,setShowDeleteConfirm] = useState(false);
+  const [deleting,setDeleting] = useState(false);
+
+  useEffect(()=>{
+    (async()=>{
+      setLoading(true); setErr('');
+      try { setReport(await api.get(`/reports/${id}`)); }
+      catch(ex){ setErr(ex.message); }
+      finally { setLoading(false); }
+    })();
+  },[id]);
+
+  const doDelete = async () => {
+    setDeleting(true);
+    try { await api.delete(`/reports/${id}`); onBack(); }
+    catch(ex){ setErr(ex.message); setDeleting(false); }
+  };
+
+  if (loading) return h(CenterSpinner);
+  if (err) return h('div',null,h(AlertBox,{type:'error',msg:err}),
+    h('button',{className:'btn btn-secondary mt-4',onClick:onBack},'← Back'));
+  if (!report) return null;
+
+  const snap = report.snapshot || {};
+  const snapCols = snap.columns || [];
+
+  return h('div',null,
+    h('div',{className:'row between mb-4'},
+      h('div',{className:'row gap'},
+        h('button',{className:'btn btn-ghost btn-sm',onClick:onBack},h(Ico,{n:'chevron_l',size:14}),'Back'),
+        h('div',null,
+          h('h2',{style:{fontWeight:600,fontSize:18}},report.title),
+          h('div',{className:'text-xs text-muted',style:{marginTop:2}},'Created ',fmt_date(report.created_at)),
+        ),
+      ),
+      h('button',{className:'btn btn-sm btn-danger',onClick:()=>setShowDeleteConfirm(true)},h(Ico,{n:'trash',size:12}),'Delete'),
+    ),
+    h('div',{className:'stats-grid'},
+      h('div',{className:'stat-tile'},h('div',{className:'stat-value'},fmt_num(snap.total_rows)),h('div',{className:'stat-label'},'Rows')),
+      h('div',{className:'stat-tile'},h('div',{className:'stat-value'},fmt_num(snap.total_columns)),h('div',{className:'stat-label'},'Columns')),
+    ),
+    snapCols.length > 0 && h('div',{className:'card mt-4',style:{marginTop:16}},
+      h('div',{className:'card-title'},'Statistics Snapshot'),
+      snapCols.map(c => h(ColumnStatCard,{key:c.name,col:c})),
+    ),
+    showDeleteConfirm && h(Modal,{title:'Delete Report',onClose:()=>setShowDeleteConfirm(false),
+      footer: h(Fragment,null,
+        h('button',{className:'btn btn-secondary',onClick:()=>setShowDeleteConfirm(false)},'Cancel'),
+        h('button',{className:'btn btn-danger',onClick:doDelete,disabled:deleting},deleting?h(Spinner,{cls:'spinner-sm'}):'Delete permanently'),
+      )},
+      h('p',null,'Delete "',h('strong',null,report.title),'"? This cannot be undone.'),
+    ),
+  );
+}
+
+/* ─────────────────── Profile Page ─────────────────── */
+function ProfilePage({onLogout}) {
+  const [user,setUser] = useState(null);
+  const [loading,setLoading] = useState(true);
+  const [err,setErr] = useState('');
+
+  useEffect(()=>{
+    (async()=>{
+      setLoading(true); setErr('');
+      try { setUser(await api.get('/users/me')); }
+      catch(ex){ setErr(ex.message); }
+      finally { setLoading(false); }
+    })();
+  },[]);
+
+  if (loading) return h(CenterSpinner);
+
+  return h('div',null,
+    h('h2',{style:{fontWeight:600,fontSize:18,marginBottom:20}},'Profile'),
+    h(AlertBox,{type:'error',msg:err}),
+    user && h('div',{className:'card',style:{maxWidth:480}},
+      h('div',{style:{display:'flex',alignItems:'center',gap:16,marginBottom:20}},
+        h('div',{style:{width:56,height:56,borderRadius:'50%',background:'var(--accent-bg)',
+          display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,fontWeight:700,color:'var(--accent)'}},
+          user.username?.charAt(0).toUpperCase()),
+        h('div',null,
+          h('div',{style:{fontWeight:600,fontSize:16}},user.username),
+          h('div',{className:'text-sm text-muted'},user.email),
+        ),
+      ),
+      h('div',{style:{display:'flex',flexDirection:'column',gap:10}},
+        [['Username',user.username],['Email',user.email],
+         ['Member since',fmt_date(user.created_at)]].map(([l,v])=>
+          h('div',{key:l,style:{display:'flex',justifyContent:'space-between',fontSize:13,paddingBottom:8,borderBottom:'1px solid var(--border)'}},
+            h('span',{style:{color:'var(--fg-2)'}},l),h('span',{style:{fontWeight:500}},v||'—'),
+          )
+        ),
+      ),
+      h('div',{style:{marginTop:20}},
+        h('button',{className:'btn btn-danger',onClick:onLogout},h(Ico,{n:'logout',size:14}),'Sign out'),
+      ),
+    ),
+  );
+}
+
+/* ─────────────────── Health Indicator ─────────────────── */
+function HealthBadge() {
+  const [health,setHealth] = useState(null);
+  useEffect(()=>{
+    const check = () => api.get('/health').then(h=>setHealth(h)).catch(()=>setHealth({status:'error'}));
+    check();
+    const t = setInterval(check, 30000);
+    return ()=>clearInterval(t);
+  },[]);
+  const ok = health?.status === 'ok';
+  return h('div',{className:'row gap',style:{fontSize:12,color:'var(--fg-3)',padding:'0 8px'}},
+    h('div',{className:`health-dot ${health?ok?'ok':'err':''}`}),
+    h('span',null, health ? (ok ? `API v${health.version||''}` : 'API down') : 'Checking…'),
+  );
+}
+
+/* ─────────────────── Shell ─────────────────── */
+function Shell({onLogout}) {
+  const [page,setPage] = useState('datasets');
+  const [dsId,setDsId] = useState(null);
+  const [rptId,setRptId] = useState(null);
+  const [createReportDs,setCreateReportDs] = useState(null);
+  const [datasets,setDatasets] = useState([]);
+  const [showCreateReport,setShowCreateReport] = useState(false);
+
+  const refreshDatasets = useCallback(()=>{
+    api.get('/datasets?page=1&page_size=500').then(d=>setDatasets(d.items||[])).catch(()=>{});
+  },[]);
+
+  useEffect(()=>{ refreshDatasets(); },[refreshDatasets]);
+
+  const nav = p => { setPage(p); setDsId(null); setRptId(null); };
+  const viewDs = id => { setDsId(id); setPage('dataset-detail'); };
+  const viewRpt = id => { setRptId(id); setPage('report-detail'); };
+  const doLogout = async () => {
+    const t = getTokens();
+    if (t?.refresh_token) { try { await api.post('/auth/logout',{refresh_token:t.refresh_token}); } catch {} }
+    clearTokens(); onLogout();
+  };
+
+  const navItems = [
+    {id:'datasets',label:'Datasets',icon:'dataset'},
+    {id:'reports',label:'Reports',icon:'report'},
+    {id:'profile',label:'Profile',icon:'user'},
+  ];
+
+  const handleCreateReport = ds => { setCreateReportDs(ds); setShowCreateReport(true); };
+
+  return h('div',{id:'app-shell'},
+    h('aside',{className:'sidebar'},
+      h('div',{className:'sidebar-logo'},h(Ico,{n:'bar_chart',size:20}),'DataPulse'),
+      h('nav',{className:'nav-section'},
+        navItems.map(({id,label,icon})=>
+          h('div',{key:id,className:`nav-item ${page===id||page===id+'-detail'?'active':''}`,onClick:()=>nav(id)},
+            h(Ico,{n:icon,size:16}),h('span',null,label),
+          )
+        ),
+      ),
+      h('div',{className:'sidebar-footer'},
+        h(HealthBadge),
+        h('div',{className:'nav-item',onClick:doLogout,style:{marginTop:4}},
+          h(Ico,{n:'logout',size:16}),h('span',null,'Sign out'),
+        ),
+      ),
+    ),
+    h('main',{className:'main'},
+      h('div',{className:'topbar'},
+        h('span',{className:'topbar-title'},{
+          datasets:'Datasets',reports:'Reports',profile:'Profile',
+          'dataset-detail':'Dataset Detail','report-detail':'Report Detail',
+        }[page]||'DataPulse'),
+      ),
+      h('div',{className:'page-content'},
+        page==='datasets' && h(DatasetsPage,{onView:viewDs}),
+        page==='dataset-detail' && h(DatasetDetail,{id:dsId,onBack:()=>nav('datasets'),onCreateReport:handleCreateReport}),
+        page==='reports' && h(ReportsPage,{onView:viewRpt,datasets}),
+        page==='report-detail' && h(ReportDetail,{id:rptId,onBack:()=>nav('reports')}),
+        page==='profile' && h(ProfilePage,{onLogout:doLogout}),
+      ),
+    ),
+    showCreateReport && h(CreateReportModal,{
+      datasets,
+      prefillDataset:createReportDs,
+      onClose:()=>{setShowCreateReport(false);setCreateReportDs(null);},
+      onDone:r=>{setShowCreateReport(false);setCreateReportDs(null);refreshDatasets();setRptId(r.id);setPage('report-detail');},
+    }),
+  );
+}
+
+/* ─────────────────── App Root ─────────────────── */
+function App() {
+  const [view,setView] = useState('loading');
+
+  useEffect(()=>{
+    _onUnauthenticated = () => { clearTokens(); setView('login'); };
+    const t = getTokens();
+    setView(t ? 'app' : 'login');
+  },[]);
+
+  if (view==='loading') return h('div',{className:'center-spinner',style:{height:'100vh'}},h(Spinner,{lg:true}));
+  if (view==='login') return h(Login,{onLogin:()=>setView('app'),onRegister:()=>setView('register')});
+  if (view==='register') return h(Register,{onSuccess:()=>setView('login'),onLogin:()=>setView('login')});
+  return h(Shell,{onLogout:()=>setView('login')});
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>
