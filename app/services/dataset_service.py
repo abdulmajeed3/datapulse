@@ -187,6 +187,8 @@ def _serialize_value(v: Any) -> Any:
 
     if v is None:
         return None
+    if type(v).__name__ in ("NAType", "NaTType"):  # pandas pd.NA / pd.NaT
+        return None
     if isinstance(v, float):
         if math.isnan(v) or math.isinf(v):
             return None
