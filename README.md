@@ -16,6 +16,7 @@ DataPulse lets authenticated users upload CSV and JSON datasets, inspect data qu
 
 - **Secure authentication** — JWT access tokens (15 min) + refresh-token rotation with SHA-256 hashed storage; Argon2id password hashing
 - **Dataset upload** — CSV and JSON; content validation, encoding detection, configurable size and row limits
+- **Dataset search** — filter the dataset list by name with a case-insensitive substring query (`?search=`)
 - **Data quality analysis** — missing-value counts, duplicate detection, empty-column detection, structured findings
 - **Summary statistics** — numeric (mean, median, std, percentiles), categorical (top values, unique count), datetime (range)
 - **Persisted reports** — immutable snapshots combining metadata, quality, and statistics; survives dataset deletion
@@ -268,6 +269,18 @@ curl -s -X POST http://localhost:8000/api/v1/datasets/ \
 
 # Save the dataset ID
 DATASET_ID=<id from response>
+```
+
+### Search and list datasets
+
+```bash
+# List all datasets (paginated)
+curl -s "http://localhost:8000/api/v1/datasets/" \
+  -H "Authorization: Bearer $TOKEN" | jq
+
+# Filter by name (case-insensitive substring match)
+curl -s "http://localhost:8000/api/v1/datasets/?search=sales" \
+  -H "Authorization: Bearer $TOKEN" | jq
 ```
 
 ### Inspect data quality

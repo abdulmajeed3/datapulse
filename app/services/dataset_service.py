@@ -130,15 +130,20 @@ async def list_datasets(
     user_id: uuid.UUID,
     page: int,
     page_size: int,
+    search: str | None = None,
 ) -> tuple[list[Dataset], int]:
+    base_filter = Dataset.owner_id == user_id
+    if search:
+        base_filter = base_filter & Dataset.name.ilike(f"%{search}%")
+
     total: int = (
-        await db.scalar(select(func.count(Dataset.id)).where(Dataset.owner_id == user_id)) or 0
+        await db.scalar(select(func.count(Dataset.id)).where(base_filter)) or 0
     )
 
     datasets = list(
         await db.scalars(
             select(Dataset)
-            .where(Dataset.owner_id == user_id)
+            .where(base_filter)
             .order_by(Dataset.created_at.desc())
             .offset((page - 1) * page_size)
             .limit(page_size)

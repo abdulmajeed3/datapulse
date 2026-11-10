@@ -69,8 +69,12 @@ async def list_user_datasets(
     db: DB,
     page: Annotated[int, Query(ge=1)] = 1,
     page_size: Annotated[int, Query(ge=1, le=500)] = 50,
+    search: Annotated[
+        str | None,
+        Query(max_length=255, description="Filter by name (case-insensitive substring)"),
+    ] = None,
 ) -> PaginatedResponse[DatasetListItem]:
-    datasets, total = await list_datasets(db, current_user.id, page, page_size)
+    datasets, total = await list_datasets(db, current_user.id, page, page_size, search)
     items = [DatasetListItem.model_validate(d) for d in datasets]
     return PaginatedResponse.create(items=items, total=total, page=page, page_size=page_size)
 

@@ -83,6 +83,29 @@ class TestDatasetList:
         resp = await client.get("/api/v1/datasets/")
         assert resp.status_code == 401
 
+    async def test_search_filters_by_name(self, client: AsyncClient, auth_headers: dict) -> None:
+        await _upload(client, auth_headers, name="alpha-dataset")
+        await _upload(client, auth_headers, name="beta-dataset")
+        resp = await client.get("/api/v1/datasets/?search=alpha", headers=auth_headers)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert all("alpha" in item["name"].lower() for item in data["items"])
+
+    async def test_search_case_insensitive(self, client: AsyncClient, auth_headers: dict) -> None:
+        await _upload(client, auth_headers, name="SalesReport")
+        resp = await client.get("/api/v1/datasets/?search=sales", headers=auth_headers)
+        assert resp.status_code == 200
+        assert any("salesreport" in item["name"].lower() for item in resp.json()["items"])
+
+    async def test_search_no_match_returns_empty(
+        self, client: AsyncClient, auth_headers: dict
+    ) -> None:
+        resp = await client.get(
+            "/api/v1/datasets/?search=zzz_no_match_xyzzy", headers=auth_headers
+        )
+        assert resp.status_code == 200
+        assert resp.json()["total"] == 0
+
 
 @pytest.mark.asyncio
 class TestDatasetGet:
