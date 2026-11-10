@@ -100,9 +100,7 @@ class TestDatasetList:
     async def test_search_no_match_returns_empty(
         self, client: AsyncClient, auth_headers: dict
     ) -> None:
-        resp = await client.get(
-            "/api/v1/datasets/?search=zzz_no_match_xyzzy", headers=auth_headers
-        )
+        resp = await client.get("/api/v1/datasets/?search=zzz_no_match_xyzzy", headers=auth_headers)
         assert resp.status_code == 200
         assert resp.json()["total"] == 0
 

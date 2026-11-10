@@ -136,9 +136,7 @@ async def list_datasets(
     if search:
         base_filter = base_filter & Dataset.name.ilike(f"%{search}%")
 
-    total: int = (
-        await db.scalar(select(func.count(Dataset.id)).where(base_filter)) or 0
-    )
+    total: int = await db.scalar(select(func.count(Dataset.id)).where(base_filter)) or 0
 
     datasets = list(
         await db.scalars(
